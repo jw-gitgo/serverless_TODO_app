@@ -11,6 +11,8 @@ const logger = createLogger('auth')
 
 const jwksUrl = 'https://test-endpoint.auth0.com/.well-known/jwks.json'
 
+//JW TODO: MUST UNCOMMENT THIS BLOCK LATER TO TURN AUTH BACK ON
+/*
 export const handler = async (
   event: CustomAuthorizerEvent
 ): Promise<CustomAuthorizerResult> => {
@@ -50,6 +52,23 @@ export const handler = async (
     }
   }
 }
+*/
+
+export const handler = async ( event: CustomAuthorizerEvent): Promise<CustomAuthorizerResult> => {
+        return {
+            principalId: '*',
+            policyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                    {
+                        Action: 'execute-api:Invoke',
+                        Effect: 'Allow',
+                        Resource: '*'
+                    }
+                ]
+            }
+        }
+};
 
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
   const token = getToken(authHeader)

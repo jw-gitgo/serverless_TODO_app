@@ -4,4 +4,11 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } f
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   // TODO: Get all TODO items for a current user
-}
+  // INITIAL ATTEMPT BELOW, BUT NEED TO UPDATE BASED ON EXAMPLE IN README
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      items: event.body
+    })
+  }
+};
