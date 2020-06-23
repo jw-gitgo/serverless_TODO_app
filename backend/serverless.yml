@@ -8,9 +8,11 @@ plugins:
 provider:
   name: aws
   runtime: nodejs8.10
-
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
+  environment:
+    TODOS_TABLE: JW-Udacity-Todos-$(self:provider.stage)
+    INDEX_NAME: todoId
 
 functions:
 
@@ -25,6 +27,17 @@ functions:
           method: get
           path: todos
           cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:$(self:provider.region):*:table/$(self:provider.environment.TODOS_TABLE)
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:$(self:provider.region):*:table/$(self:provider.environment.TODOS_TABLE)/index/${self:provider.environment.INDEX_NAME}
 
   # TODO: Configure this function
   CreateTodo:
@@ -61,16 +74,6 @@ functions:
           method: post
           path: todos/{todoId}/attachment
           cors: true
-
-environment:
-  TODOS_TABLE: JW-Udacity-Todos-$(self:provider.stage)
-  INDEX_NAME: todoId
-
-iamRoleStatements:
-  - Effect: Allow
-    Action:
-      - dynamodb:Scan
-    Resource: arn:aws:dynamodb:$(self:provider.region):*:table/$(self:provider.environment.TODOS_TABLE)
 
 resources:
   Resources:

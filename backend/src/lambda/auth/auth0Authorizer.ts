@@ -1,6 +1,8 @@
 import { CustomAuthorizerEvent, CustomAuthorizerResult } from 'aws-lambda'
 import 'source-map-support/register'
 
+//JW TODO: MUST UNCOMMENT THIS BLOCK LATER TO TURN AUTH BACK ON
+/*
 import { verify, decode } from 'jsonwebtoken'
 import { createLogger } from '../../utils/logger'
 import Axios from 'axios'
@@ -11,8 +13,7 @@ const logger = createLogger('auth')
 
 const jwksUrl = 'https://test-endpoint.auth0.com/.well-known/jwks.json'
 
-//JW TODO: MUST UNCOMMENT THIS BLOCK LATER TO TURN AUTH BACK ON
-/*
+
 export const handler = async (
   event: CustomAuthorizerEvent
 ): Promise<CustomAuthorizerResult> => {
@@ -52,23 +53,6 @@ export const handler = async (
     }
   }
 }
-*/
-
-export const handler = async ( event: CustomAuthorizerEvent): Promise<CustomAuthorizerResult> => {
-        return {
-            principalId: '*',
-            policyDocument: {
-                Version: '2012-10-17',
-                Statement: [
-                    {
-                        Action: 'execute-api:Invoke',
-                        Effect: 'Allow',
-                        Resource: '*'
-                    }
-                ]
-            }
-        }
-};
 
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
   const token = getToken(authHeader)
@@ -89,3 +73,22 @@ function getToken(authHeader: string): string {
 
   return token
 }
+
+*/
+
+export const handler = async ( event: CustomAuthorizerEvent): Promise<CustomAuthorizerResult> => {
+  console.log('Processing event: ', event)
+  return {
+      principalId: '*',
+      policyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+              {
+                  Action: 'execute-api:Invoke',
+                  Effect: 'Allow',
+                  Resource: '*'
+              }
+          ]
+      }
+  }
+};
