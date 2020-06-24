@@ -7,6 +7,9 @@ import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
 const docClient = new AWS.DynamoDB.DocumentClient()
 const todosTable = process.env.TODOS_TABLE
 
+// TODO: Implement creating a new TODO item
+// INITIAL ATTEMPT BELOW, based on 3.10
+
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   console.log('Processing event: ', event)
   const itemId = uuid.v4()
@@ -21,7 +24,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     TableName: todosTable,
     Item: newItem
   }).promise()
-  // TODO: Implement creating a new TODO item
+  
   return {
     statusCode: 201,
     headers: {

@@ -14,6 +14,18 @@ provider:
     TODOS_TABLE: JW-Udacity-Todos-$(self:provider.stage)
     INDEX_NAME: todoId
 
+custom:
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Todos API
+        description: Serverless application for tracking 'todos'
+    models:
+      - name: TodoRequest
+        contentType: application/json
+        schema: ${file(models/create-todo-request.json)}
+
 functions:
 
   Auth:
@@ -49,6 +61,10 @@ functions:
           method: post
           path: todos
           cors: true
+          request:
+            # Schema that will be used to validate incoming requests
+            schema:
+              application/json: ${file(models/create-todo-request.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -63,6 +79,10 @@ functions:
           method: patch
           path: todos/{todoId}
           cors: true
+          request:
+            # Schema that will be used to validate incoming requests
+            schema:
+              application/json: ${file(models/create-todo-request.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
