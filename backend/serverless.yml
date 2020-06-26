@@ -7,12 +7,13 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
   environment:
-    TODOS_TABLE: JW-Udacity-Todos-$(self:provider.stage)
+    TODOS_TABLE: jw-udacity-todos-table-${self:provider.stage}
     INDEX_NAME: todoId
+    S3_BUCKET: jw-udacity-todos-bucket-${self:provider.stage}
 
 custom:
   documentation:
@@ -24,7 +25,7 @@ custom:
     models:
       - name: TodoRequest
         contentType: application/json
-        schema: ${file(models/create-todo-request.json)}
+        schema: ${file(src/models/create-todo-request.json)}
 
 functions:
 
@@ -45,13 +46,13 @@ functions:
           - dynamodb:Query
           - dynamodb:Scan
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:$(self:provider.region):*:table/$(self:provider.environment.TODOS_TABLE)
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:Query
           - dynamodb:Scan
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:$(self:provider.region):*:table/$(self:provider.environment.TODOS_TABLE)/index/${self:provider.environment.INDEX_NAME}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.INDEX_NAME}
 
   # TODO: Configure this function
   CreateTodo:
@@ -64,12 +65,12 @@ functions:
           request:
             # Schema that will be used to validate incoming requests
             schema:
-              application/json: ${file(models/create-todo-request.json)}
+              application/json: ${file(src/models/create-todo-request.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:$(self:provider.region):*:table/$(self:provider.environment.TODOS_TABLE)
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
   # TODO: Configure this function
   UpdateTodo:
@@ -82,18 +83,18 @@ functions:
           request:
             # Schema that will be used to validate incoming requests
             schema:
-              application/json: ${file(models/create-todo-request.json)}
+              application/json: ${file(src/models/create-todo-request.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:$(self:provider.region):*:table/$(self:provider.environment.TODOS_TABLE)
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:UpdateItem
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:$(self:provider.region):*:table/$(self:provider.environment.TODOS_TABLE)/index/${self:provider.environment.INDEX_NAME}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.INDEX_NAME}
 
 
   # TODO: Configure this function
@@ -109,12 +110,12 @@ functions:
         Action:
           - dynamodb:DeleteItem
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:$(self:provider.region):*:table/$(self:provider.environment.TODOS_TABLE)
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
       - Effect: Allow
         Action:
           - dynamodb:DeleteItem
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:$(self:provider.region):*:table/$(self:provider.environment.TODOS_TABLE)/index/${self:provider.environment.INDEX_NAME}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.INDEX_NAME}
 
 
   # TODO: Configure this function
@@ -161,3 +162,35 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL # What attributes will be copied to an index
+    AttachmentsBucket: 
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.S3_BUCKET}
+        CorsConfiguration: 
+          CorsRules: 
+            - AllowedOrigins: 
+                - "*"
+              AllowedHeaders: 
+                - "*"
+              AllowedMethods: 
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+    BucketPolicy: 
+      Type: AWS::S3::BucketPolicy
+      Properties: 
+        Bucket: !Ref AttachmentsBucket
+        PolicyDocument: 
+          Id: MyPolicy
+          Statement: 
+            - Action: 
+                - "s3:GetObject"
+                - "s3:PutObject"
+              Effect: Allow
+              Principal: "*"
+              Resource: "arn:aws:s3:::${self:provider.environment.S3_BUCKET}/*"
+              Sid: PublicReadWriteBucketPolicy
+          Version: "2012-10-17"
