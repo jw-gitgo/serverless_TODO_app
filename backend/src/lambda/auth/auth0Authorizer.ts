@@ -1,8 +1,6 @@
 import { CustomAuthorizerEvent, CustomAuthorizerResult } from 'aws-lambda'
 import 'source-map-support/register'
 
-//JW TODO: MUST UNCOMMENT THIS BLOCK LATER TO TURN AUTH BACK ON
-/*
 import { verify, decode } from 'jsonwebtoken'
 import { createLogger } from '../../utils/logger'
 import Axios from 'axios'
@@ -74,21 +72,3 @@ function getToken(authHeader: string): string {
   return token
 }
 
-*/
-
-export const handler = async ( event: CustomAuthorizerEvent): Promise<CustomAuthorizerResult> => {
-  console.log('Processing event: ', event)
-  return {
-      principalId: '*',
-      policyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-              {
-                  Action: 'execute-api:Invoke',
-                  Effect: 'Allow',
-                  Resource: '*'
-              }
-          ]
-      }
-  }
-};
