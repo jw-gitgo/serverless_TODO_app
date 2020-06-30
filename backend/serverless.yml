@@ -281,4 +281,4 @@ resources:
       Properties:
         Name: ${self:provider.environment.AUTH_0_SECRET_ID}
         Description: Auth0 secret
-        KMSKeyId: !Ref KMSKey
+        KmsKeyId: !Ref KMSKey

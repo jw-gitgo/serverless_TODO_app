@@ -2,10 +2,11 @@ import { CustomAuthorizerEvent, CustomAuthorizerResult } from 'aws-lambda'
 import 'source-map-support/register'
 
 import * as AWS from 'aws-sdk'
-import { verify, decode } from 'jsonwebtoken'
+//import { verify, decode } from 'jsonwebtoken'
+import { verify } from 'jsonwebtoken'
 import { createLogger } from '../../utils/logger'
-import Axios from 'axios'
-import { Jwt } from '../../auth/Jwt'
+//import Axios from 'axios'
+//import { Jwt } from '../../auth/Jwt'
 import { JwtPayload } from '../../auth/JwtPayload'
 
 const secretId = process.env.AUTH_0_SECRET_ID
@@ -16,7 +17,7 @@ let cachedSecret: string
 
 const logger = createLogger('auth')
 
-const jwksUrl = 'https://test-endpoint.auth0.com/.well-known/jwks.json'
+//const jwksUrl = 'https://test-endpoint.auth0.com/.well-known/jwks.json'
 
 
 export const handler = async (
@@ -61,7 +62,7 @@ export const handler = async (
 
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
   const token = getToken(authHeader)
-  const jwt: Jwt = decode(token, { complete: true }) as Jwt
+  //const jwt: Jwt = decode(token, { complete: true }) as Jwt
 
   // TODO: Implement token verification
   const secretObject: any = await getSecret()
