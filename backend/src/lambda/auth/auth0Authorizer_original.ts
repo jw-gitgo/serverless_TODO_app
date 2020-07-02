@@ -1,23 +1,24 @@
+/*
 import { CustomAuthorizerEvent, CustomAuthorizerResult } from 'aws-lambda'
 import 'source-map-support/register'
 
-//import * as AWS from 'aws-sdk'
-import { verify, decode } from 'jsonwebtoken'
-//import { verify } from 'jsonwebtoken'
+import * as AWS from 'aws-sdk'
+//import { verify, decode } from 'jsonwebtoken'
+import { verify } from 'jsonwebtoken'
 import { createLogger } from '../../utils/logger'
-import Axios from 'axios'
-import { Jwt } from '../../auth/Jwt'
+//import Axios from 'axios'
+//import { Jwt } from '../../auth/Jwt'
 import { JwtPayload } from '../../auth/JwtPayload'
 
-//const secretId = process.env.AUTH_0_SECRET_ID
-//const secretField = process.env.AUTH_0_SECRET_FIELD
+const secretId = process.env.AUTH_0_SECRET_ID
+const secretField = process.env.AUTH_0_SECRET_FIELD
 
-//const client = new AWS.SecretsManager()
-//let cachedSecret: string
+const client = new AWS.SecretsManager()
+let cachedSecret: string
 
 const logger = createLogger('auth')
 
-const jwksUrl = 'https://test-endpoint.auth0.com/.well-known/jwks.json'
+//const jwksUrl = 'https://test-endpoint.auth0.com/.well-known/jwks.json'
 
 
 export const handler = async (
@@ -62,31 +63,12 @@ export const handler = async (
 
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
   const token = getToken(authHeader)
-  const jwt: Jwt = decode(token, { complete: true }) as Jwt
-  const jwtKid = jwt.header.kid
-  let cert: string | Buffer
+  //const jwt: Jwt = decode(token, { complete: true }) as Jwt
 
   // TODO: Implement token verification
-  // const secretObject: any = await getSecret()
-  // const secret = secretObject(secretField)
-  // return verify(token, secret) as JwtPayload
-
-  try {
-    const jwks = await Axios.get(jwksUrl);
-    const signingKey = jwks.data.keys.filter(k => k.kid === jwtKid)[0];
-
-    if (!signingKey) {
-      throw new Error(`Unable to find a signing key that matches '${jwtKid}'`);
-    }
-    const { x5c } = signingKey;
-
-    cert = `-----BEGIN CERTIFICATE-----\n${x5c[0]}\n-----END CERTIFICATE-----`;
-
-  } catch (error) {
-    console.log('Error While getting Certificate : ', error);
-  }
-
-  return verify(token, cert, { algorithms: ['RS256'] }) as JwtPayload;
+  const secretObject: any = await getSecret()
+  const secret = secretObject(secretField)
+  return verify(token, secret) as JwtPayload
 }
 
 function getToken(authHeader: string): string {
@@ -101,7 +83,6 @@ function getToken(authHeader: string): string {
   return token
 }
 
-/*
 async function getSecret(){
   if (cachedSecret) return cachedSecret
 
