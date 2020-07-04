@@ -35,7 +35,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     todoId,
     createdAt,
     done: false,
-    attachmentUrl: `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${todoId}`
+    attachmentUrl: `https://${process.env.S3_BUCKET}.s3.amazonaws.com/${todoId}`,
+    ...newTodo
   };
 
   await docClient.put({
