@@ -2,6 +2,11 @@ import 'source-map-support/register';
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda';
 import { decode } from 'jsonwebtoken';
 import { JwtPayload } from '../../auth/JwtPayload';
+import * as AWS from 'aws-sdk'
+
+const docClient = new AWS.DynamoDB.DocumentClient()
+const todosTable = process.env.TODOS_TABLE
+const indexName = process.env.INDEX_NAME
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   
@@ -11,9 +16,9 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   const decodedJwt = decode(jwtToken) as JwtPayload
   const userId = decodedJwt.sub;
 
-  const result = await this.docClient.query({
-    TableName: this.todosTable,
-    IndexName: this.indexName,
+  const result = await docClient.query({
+    TableName: todosTable,
+    IndexName: indexName,
     KeyConditionExpression: 'userId = :userId',
     ExpressionAttributeValues: {
       ':userId': userId
