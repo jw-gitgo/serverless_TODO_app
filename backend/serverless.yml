@@ -11,7 +11,7 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
   environment:
-    TODOS_TABLE: jw-udacity-todos-table-${self:provider.stage}
+    TODOS_TABLE: jw-todos-table-${self:provider.stage}
     INDEX_NAME: todoId
     S3_BUCKET: jw-udacity-todos-bucket-${self:provider.stage}
     AUTH_0_SECRET_ID: Auth0Secret-${self:provider.stage}
@@ -193,7 +193,7 @@ resources:
         RestApiId: 
           Ref: ApiGatewayRestApi
       Type: "AWS::ApiGateway::GatewayResponse"
-    TodosTable:
+    TodoTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
@@ -218,7 +218,7 @@ resources:
               - AttributeName: createdAt
                 KeyType: RANGE
             Projection:
-              ProjectionType: ALL # What attributes will be copied to an index
+              ProjectionType: ALL
     AttachmentsBucket: 
       Type: AWS::S3::Bucket
       Properties:
