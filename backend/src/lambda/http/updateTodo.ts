@@ -23,7 +23,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
   // Check if todo already exists
   if (!(await docClient.get({
-    TableName: this.todosTable,
+    TableName: todosTable,
     Key: {
       todoId,
       userId
