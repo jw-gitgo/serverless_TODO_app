@@ -21,24 +21,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
   // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
 
-  // Check if todo already exists
-  if (!(await docClient.get({
-    TableName: todosTable,
-    Key: {
-      todoId,
-      userId
-    }
-  }).promise())) {
-    return {
-      statusCode: 404,
-      body: JSON.stringify({
-        error: 'Item does not exist'
-      })
-    };
-  }
-
   //perform the update
-  await docClient.update({
+  const updateSuccess = await docClient.update({
     TableName: todosTable,
     Key: {
       todoId,
@@ -56,6 +40,16 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       '#done': 'done'
     }
   }).promise();
+
+  // Check if todo already exists
+  if (!(updateSuccess)) {
+    return {
+      statusCode: 404,
+      body: JSON.stringify({
+        error: 'Item does not exist'
+      })
+    };
+  }
   
   return {
     statusCode: 201,
