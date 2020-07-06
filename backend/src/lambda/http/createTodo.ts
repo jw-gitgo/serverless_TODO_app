@@ -12,8 +12,6 @@ const todosTable = process.env.TODOS_TABLE
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const newTodo: CreateTodoRequest = JSON.parse(event.body);
 
-  console.log(event.body)
-
   if (!newTodo.name) {
     return {
       statusCode: 400,
