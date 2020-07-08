@@ -3,12 +3,15 @@ import * as AWS from 'aws-sdk'
 import { APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda'
 import { decode } from 'jsonwebtoken';
 import { JwtPayload } from '../../auth/JwtPayload';
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('deleteTodo');
 
 const docClient = new AWS.DynamoDB.DocumentClient()
 const todosTable = process.env.TODOS_TABLE
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId
+  logger.info('Deleting event: ', event)
 
   const authorization = event.headers.Authorization
   const split = authorization.split(' ')

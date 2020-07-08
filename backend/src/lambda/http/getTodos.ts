@@ -3,6 +3,8 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } f
 import { decode } from 'jsonwebtoken';
 import { JwtPayload } from '../../auth/JwtPayload';
 import * as AWS from 'aws-sdk'
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('getTodos');
 
 const docClient = new AWS.DynamoDB.DocumentClient()
 const todosTable = process.env.TODOS_TABLE
@@ -10,6 +12,7 @@ const indexName = process.env.INDEX_NAME
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   
+  logger.info('processing event: ', event)
   const authorization = event.headers.Authorization
   const split = authorization.split(' ')
   const jwtToken = split[1]

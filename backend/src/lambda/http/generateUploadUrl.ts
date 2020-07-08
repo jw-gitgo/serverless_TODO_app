@@ -2,11 +2,14 @@ import 'source-map-support/register'
 import * as AWS from 'aws-sdk'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
 
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('generateUploadUrl');
+
 const s3_bucket = process.env.S3_BUCKET
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId
-
+  logger.info('User was authorized', event)
   // TODO: Return a presigned URL to upload a file for a TODO item with the provided id
   // INITIAL ATTEMPT BELOW, based on 4.2.3
 

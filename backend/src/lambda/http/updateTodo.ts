@@ -5,11 +5,14 @@ import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
 import { decode } from 'jsonwebtoken';
 import { JwtPayload } from '../../auth/JwtPayload';
 
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('updateTodo');
+
 const docClient = new AWS.DynamoDB.DocumentClient()
 const todosTable = process.env.TODOS_TABLE
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  console.log('Processing event: ', event)
+  logger.info('Updating event: ', event)
   const todoId = event.pathParameters.todoId
   const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
 

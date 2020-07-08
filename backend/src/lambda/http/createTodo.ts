@@ -5,12 +5,15 @@ import * as uuid from 'uuid';
 import { decode } from 'jsonwebtoken';
 import { JwtPayload } from '../../auth/JwtPayload';
 import * as AWS from 'aws-sdk'
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('createTodo');
 
 const docClient = new AWS.DynamoDB.DocumentClient()
 const todosTable = process.env.TODOS_TABLE
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const newTodo: CreateTodoRequest = JSON.parse(event.body);
+  logger.info('Creating event: ', event)
 
   if (!newTodo.name) {
     return {
